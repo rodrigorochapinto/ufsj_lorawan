@@ -3,7 +3,7 @@
     Autor: Rodrigo Rocha.
     Data: 11/2022.
     Versão: v_4.0.1
-    Código de Domínio Público. **********************************
+    Código de Domínio Público.
 
     Este código se refere ao receptor de um projeto de mestrado do curso de Ciências da Computação 
     da UFSJ(Universidade Federal de São João del-Rei) que tem por finalidade testar a viabilidade 
