@@ -26,6 +26,7 @@
 #include <SD.h>
 #include <avr/wdt.h>
 
+# define SD_CS        4
 #define LED_AMARELO   5
 #define LED_VERDE     6  
 #define LED_VERMELHO  7
@@ -48,9 +49,9 @@ File myFile;								// Cria o objeto myFile para manipulação de arquivos
  
 void setup(){
   wdt_enable(WDTO_8S);						// Habilita o watchdog com tempo de 8 segundos
-  pinMode(LED_AMARELO, OUTPUT);				// Configura o pino 5 como saida
-  pinMode(LED_VERDE, OUTPUT);				// Configura o pino 6 como saida
-  pinMode(LED_VERMELHO, OUTPUT);			// Configura o pino 7 como saida
+  pinMode(LED_AMARELO, OUTPUT);				// Configura o pino D5 como saida
+  pinMode(LED_VERDE, OUTPUT);				// Configura o pino D6 como saida
+  pinMode(LED_VERMELHO, OUTPUT);			// Configura o pino D7 como saida
   ss.begin(9600);		    				// Configura o baud rate para comunicação com o módulo GPS	
   LoRa.setPins(10, 9, 8);  					// Sobrescreve os pinos NSS, RESET e DIO padrão usados pela biblioteca 	
   if (!LoRa.begin(915E6)){ 					// Inicializa o modem LoRa com a frequência central de 915 Mhz            
@@ -73,7 +74,7 @@ void setup(){
    digitalWrite(LED_VERMELHO, LOW); 
    delay(30); 
   }
-  if (!SD.begin(4)) {						// Inicia o módulo de cartão SD
+  if (!SD.begin(SD_CS)) {					// Inicia o módulo de cartão SD com o pino D4 como chip select
     digitalWrite(LED_AMARELO, HIGH);		// Acende o Led amarelo quando há erro no módulo SD card
     while (true){							// Trava o código até que o dispositivo seja reiniciado
       wdt_reset(); 				    		// Restarta o watchdog                    
@@ -139,9 +140,9 @@ void sendMessage(String outgoing)
 }
  
 /* Recebe uma mensagem LoRa */ 
-int onReceive(int packetSize){
+int8_t onReceive(int8_t packetSize){
   if (packetSize == 0) return;          	// Se nenhuma mesnagem foi recebida, retorna nada
-  int recipient = LoRa.read();          	// Endereco de quem ta recebendo
+  int8_t recipient = LoRa.read();          	// Endereco de quem ta recebendo
   byte sender = LoRa.read();            	// Endereco do remetente
   byte incomingMsgId = LoRa.read();     	// ID da mensagem recebida
   byte incomingLength = LoRa.read();    	// Tamanho da mensagem recebida
@@ -216,14 +217,6 @@ static void smartDelay(unsigned long ms){
     while (ss.available())
       gps.encode(ss.read());				// Traduz as informações do módulo GPS
   } while (millis() - start < ms);
-}
-
-void zero(){
- mensagem.concat('0');
-}
-
-void intervalo(){
- mensagem.concat(';');
 }
 
 /* ----------- Persiste o conteúdo da string no arquivo "dataset.csv" ------------ */

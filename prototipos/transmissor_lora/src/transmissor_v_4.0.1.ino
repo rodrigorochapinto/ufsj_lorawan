@@ -174,9 +174,9 @@ void sendMessage(String outgoing){
   digitalWrite(LED_VERMELHO, LOW);
 }
 /* Recebe uma mensagem LoRa */ 
-int onReceive(int packetSize){
+int8_t onReceive(int8_t packetSize){
   if (packetSize == 0) return 0;    		// Se nenhuma mesnagem foi recebida, retorna nada         
-  int recipient = LoRa.read(); 			    // Endereco de quem ta recebendo         
+  int8_t recipient = LoRa.read(); 			    // Endereco de quem ta recebendo         
   byte sender = LoRa.read();            	// Endereco do remetente
   byte incomingMsgId = LoRa.read();     	// ID da mensagem recebida
   byte incomingLength = LoRa.read(); 	  	// Tamanho da mensagem recebida    
@@ -213,7 +213,7 @@ static void smartDelay(unsigned long ms){
 
 void apagaLinha1(){
   lcd.setCursor(0,0);
-  for(int i =0; i<16; i++) lcd.print(" ");
+  for(int8_t i =0; i<16; i++) lcd.print(" ");
   lcd.setCursor(0,0);
 }
 
