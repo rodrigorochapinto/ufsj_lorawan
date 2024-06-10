@@ -53,33 +53,25 @@ int8_t disparo      = 0;
 int8_t pacote       = 0;
  
 void setup(){
-  wdt_enable(WDTO_8S);			   			//Habilita o watchdog com tempo de 8 segundos
+  wdt_enable(WDTO_8S);			   			// Habilita o watchdog com tempo de 8 segundos
   buzzer_on();
-  pinMode(BOTAO_ENVIAR, INPUT);
-  pinMode(LED_AMARELO, OUTPUT);
-  pinMode(LED_VERDE, OUTPUT);
-  pinMode(LED_VERMELHO, OUTPUT);
-  pinMode(BUZZER, OUTPUT);    				// Configuração da porta A3 analógica para digital
+  pinMode(BOTAO_ENVIAR, INPUT);				// Configura o pino D4 do MCU como entrada
+  pinMode(LED_AMARELO, OUTPUT);				// Configura o pino D5 do MCU como saida
+  pinMode(LED_VERDE, OUTPUT);				// Configura o pino D6 do MCU como saida
+  pinMode(LED_VERMELHO, OUTPUT);			// Configura o pino D7 do MCU como saida
+  pinMode(BUZZER, OUTPUT);    				// Configura o pino A3 analógico para saída digital
   ss.begin(9600);				      		// Configura o baud rate para comunicação com o módulo GPS
   lcd.init();
   lcd.backlight();
+  LoRa.setPins(10, 9, 8);  					// Sobrescreve os pinos NSS, RESET e DIO padrão usados pela biblioteca
   if (!LoRa.begin(915E6)){ 					// Inicializa o modem LoRa com a frequência central de 915 Mhz            
     digitalWrite(LED_AMARELO, HIGH);		// Acende o Led amarelo quando há erro no modem LoRa
-    while (1){
+    while (true){							// Trava o código até que o dispositivo seja reiniciado
       wdt_reset(); 				    		// Restarta o watchdog                    
     }                      
   }
-  if (SF == 11){
-    LoRa.setSpreadingFactor(10);
-  }else{
-    LoRa.setSpreadingFactor(SF); 			// Configura o fator de espalhamento   
-  }
-  if (SF == 10){
-    LoRa.setTxPower(19); 
-  }else{
-    LoRa.setTxPower(TX_Power);  			// Configura a potência de transmissão de 0 até 20 dB  
-  }
-
+  LoRa.setSpreadingFactor(SF); 				// Configura o fator de espalhamento SF7...SF12  
+  LoRa.setTxPower(TX_Power);  				// Configura a potência de transmissão de 0 até 20 dB   
 /* Pisca os leds verde e vermelho indicando o funcionamento do modem LoRa */  
   for (int i = 0; i < 10; i++) { 
    digitalWrite(LED_VERDE, HIGH);
@@ -94,32 +86,31 @@ void setup(){
 }
 
 void loop(){
-  digitalWrite(LED_VERMELHO, HIGH);
+  digitalWrite(LED_VERMELHO, HIGH);			// Acende o LED vermelho entrando em estado de espera
   while(digitalRead(BOTAO_ENVIAR)){
     wdt_reset();						  	// Restarta o watchdog
-    smartDelay(200);						// Captura das informações vindas do módulo GPS
+    smartDelay(200);						// Coleta as informações vindas do módulo GPS
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("Altitude: ");
-    lcd.print abs((gps.altitude.meters()));
+    lcd.print("Altitude: ");				
+    lcd.print abs((gps.altitude.meters())); // Atualiza o valor da Altitude no LCD
     lcd.setCursor(0,1);
     lcd.print("Sat.: ");
-    lcd.print(gps.satellites.value());
+    lcd.print(gps.satellites.value());		// Atualiza o valor dos Satélites no LCD
     lcd.print("  SF: "); 
-    lcd.print(SF); 
+    lcd.print(SF); 							// Atualiza o valor do SF no LCD
   }  
-  delay(500);                 				// Impede o disparo múltiplo do botão
-  digitalWrite(LED_VERMELHO, LOW);
+  delay(500);                 				// Impede o disparo múltiplo do botão enviar
+  digitalWrite(LED_VERMELHO, LOW);			
   if (millis() - lastSendTime > interval){
-    sendMessage("SYN");
-    lastSendTime = millis();  				// Timestamp da ultima mensagem
+    sendMessage("SYN");						// Envia "SYN" ao receptor 
+    lastSendTime = millis();  				
   }
-
-  if (onReceive(LoRa.parsePacket())){
-    if (mensagem == "ACK"){ 
-	  
-      buzzer();               				// Confirmação sonora iníciando o envio das mensagens  
-      for (int i = 0; i < LMT_DISPARO; i++){  
+  if (onReceive(LoRa.parsePacket())){		// Entra em estado de escuta até receber o "ACK" do receptor
+    if (mensagem == "ACK"){   				
+      buzzer();               				// Confirmação sonora indicando o início do envio das mensagens  
+/* Looping mais externo */	  
+      for (int8_t i = 0; i < LMT_DISPARO; i++){  
         wdt_reset();						// Restarta o watchdog
         disparo++;
         if(i != 0){           				// Verifica se não é o primeiro disparo
@@ -128,17 +119,16 @@ void loop(){
             delay(1000);  
           }
         }
-        for (int j = 0; j < LMT_PACOTE; j++){ 
+/* Looping mais interno */		
+        for (int8_t j = 0; j < LMT_PACOTE; j++){ 
           wdt_reset();						// Restarta o watchdog      
-          lcd_gps();     
-          sendMessage(String(mensagem));
+          lcd_gps();     					// Lê o GPS, atualiza o LCD e monta a mensagem a ser enviada
+          sendMessage(String(mensagem));	// Envio da mensagem concatenada ao receptor
           mensagem = "";
         }
       }
-      disparo = 0;
-      
-	  /* Confirmação sonora do término das menssagens enviadas*/
-      buzzer();
+      disparo = 0;     
+      buzzer();								// Confirmação sonora do término das menssagens enviadas
       delay(350);
       buzzer();
       delay(350);
@@ -201,7 +191,7 @@ int onReceive(int packetSize){
     void alertaFalha();
     return;
   }
-  // Pisca os Leds verdes para confirmar o recebimento de uma mensagem
+/* Pisca os Leds verdes para confirmar o recebimento de uma mensagem */
   digitalWrite(LED_VERDE, HIGH);
   delay (100);
   digitalWrite(LED_VERDE, LOW);
@@ -217,7 +207,7 @@ static void smartDelay(unsigned long ms){
   unsigned long start = millis();
   do {
     while (ss.available())
-      gps.encode(ss.read());				// Leitura das informações do módulo GPS
+      gps.encode(ss.read());				// Traduz as informações do módulo GPS
   } while (millis() - start < ms);
 }
 
@@ -238,7 +228,7 @@ void intervalo(){
 
 /* Atualiza dados do LCD e monta a mensagem para ser enviada */
 String lcd_gps(){
-  smartDelay(500);							// Captura das informações vindas do módulo GPS
+  smartDelay(500);							// Coleta as informações vindas do módulo GPS
   
   int8_t satelites = gps.satellites.value();
   float  prec      = gps.hdop.hdop();

@@ -47,21 +47,19 @@ String mensagem;
 File myFile;								// Cria o objeto myFile para manipulação de arquivos
  
 void setup(){
-  wdt_enable(WDTO_8S);						//Habilita o watchdog com tempo de 8 segundos
-  pinMode(LED_AMARELO, OUTPUT);
-  pinMode(LED_VERDE, OUTPUT);
-  pinMode(LED_VERMELHO, OUTPUT);
+  wdt_enable(WDTO_8S);						// Habilita o watchdog com tempo de 8 segundos
+  pinMode(LED_AMARELO, OUTPUT);				// Configura o pino 5 como saida
+  pinMode(LED_VERDE, OUTPUT);				// Configura o pino 6 como saida
+  pinMode(LED_VERMELHO, OUTPUT);			// Configura o pino 7 como saida
   ss.begin(9600);		    				// Configura o baud rate para comunicação com o módulo GPS	
-
+  LoRa.setPins(10, 9, 8);  					// Sobrescreve os pinos NSS, RESET e DIO padrão usados pela biblioteca 	
   if (!LoRa.begin(915E6)){ 					// Inicializa o modem LoRa com a frequência central de 915 Mhz            
     digitalWrite(LED_AMARELO, HIGH);		// Acende o Led amarelo quando há erro no modem LoRa
-    while (true);                      
+    while (true){							// Trava o código até que o dispositivo seja reiniciado
+      wdt_reset(); 				    		// Restarta o watchdog                    
+    }                     
   }
-  if (SF == 11){
-    LoRa.setSpreadingFactor(10);
-  }else{
-    LoRa.setSpreadingFactor(SF); 			// Configura o fator de espalhamento
-  }
+  LoRa.setSpreadingFactor(SF); 				// Configura o fator de espalhamento  SF7...SF12
   LoRa.setTxPower(TX_Power);				// Configura a potência de transmissão de 0 até 20 dB 
   
 /* Pisca os leds verde e vermelho indicando o funcionamento do modem LoRa */ 
@@ -75,9 +73,11 @@ void setup(){
    digitalWrite(LED_VERMELHO, LOW); 
    delay(30); 
   }
-  if (!SD.begin(4)) {						//Inicia cartão SD
+  if (!SD.begin(4)) {						// Inicia o módulo de cartão SD
     digitalWrite(LED_AMARELO, HIGH);		// Acende o Led amarelo quando há erro no módulo SD card
-    while (1);
+    while (true){							// Trava o código até que o dispositivo seja reiniciado
+      wdt_reset(); 				    		// Restarta o watchdog                    
+    };
   }
 /* Pisca os leds amarelo e vermelho indicando o funcionamento do módulo SD card */   
   for (int i = 0; i < 10; i++) { 
@@ -110,7 +110,7 @@ void loop(){
 void enviarACK(){
   sendMessage("ACK");						// Confirma o recebimento da mensagem SYN enviada pelo transmissor enviando um ACK
 	mensagem = "";
-	mensagem.concat("0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"); // Adiciona zeros na mensagem
+	mensagem.concat("0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"); // Adiciona zeros na mensagem indicando o início das mensagens recebidas
 	salvar(mensagem);
 }
 
@@ -157,7 +157,7 @@ int onReceive(int packetSize){
     return 0;                        
   }
 
-  if (recipient != localAddress && recipient != 0xFF){ // Esta mensagem não é para esse endereço
+  if (recipient != localAddress && recipient != 0xFF){ // Esta mensagem não é para este endereço
     alertaFalha(); 
     return 0;
   }
@@ -168,7 +168,7 @@ int onReceive(int packetSize){
     mensagem.concat(';');
     mensagem.concat(LoRa.packetRssi());
 
-    smartDelay(1000);						// Captura das informações vindas do módulo GPS
+    smartDelay(1000);						// Coleta as informações vindas do módulo GPS
    
     mensagem.concat(';');
     mensagem.concat(gps.satellites.value());
@@ -214,7 +214,7 @@ static void smartDelay(unsigned long ms){
   unsigned long start = millis();
   do {
     while (ss.available())
-      gps.encode(ss.read());				// Leitura das informações do módulo GPS
+      gps.encode(ss.read());				// Traduz as informações do módulo GPS
   } while (millis() - start < ms);
 }
 
