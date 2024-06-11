@@ -26,7 +26,7 @@
 #include <SD.h>
 #include <avr/wdt.h>
 
-# define SD_CS        4
+#define SD_CS        4
 #define LED_AMARELO   5
 #define LED_VERDE     6  
 #define LED_VERMELHO  7
@@ -226,12 +226,7 @@ void salvar(String msg){
     myFile.println(msg);
     myFile.close();
   } else {
-    digitalWrite(LED_AMARELO, HIGH);
-    delay(30);
-    digitalWrite(LED_AMARELO, LOW); 
-    delay(30);
-    digitalWrite(LED_AMARELO, HIGH);
-    delay(30);
-    digitalWrite(LED_AMARELO, LOW); 
+/* Alerta visual de falha */	  
+    alertaFalha(); 
   }
 }
