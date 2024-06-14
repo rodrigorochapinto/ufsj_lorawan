@@ -1,0 +1,784 @@
+[
+    {
+        "id": "6ae4385e7f7c25f8",
+        "type": "mqtt in",
+        "z": "40fbb2910c689216",
+        "name": "Dispositivos",
+        "topic": "#",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "fd0e70611ed12620",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 290,
+        "y": 360,
+        "wires": [
+            [
+                "58619a8543c1f39c",
+                "8288f6be3d49823b"
+            ]
+        ]
+    },
+    {
+        "id": "d9d0c6041b04ec3d",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "func.temp.ext",
+        "func": "msg.payload = msg.payload['uplink_message']['decoded_payload']['temperatura'];\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 580,
+        "wires": [
+            [
+                "53c613fe23805439"
+            ]
+        ]
+    },
+    {
+        "id": "ab0e4b85da1f3ebb",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "func.umid.int.",
+        "func": "msg.payload = msg.payload['uplink_message']['decoded_payload']['umidade'];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 180,
+        "wires": [
+            [
+                "6e44087a29e6ef8f"
+            ]
+        ]
+    },
+    {
+        "id": "58619a8543c1f39c",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "sensor.int",
+        "func": "if (msg.payload['end_device_ids']['device_id'] === \"clima-interno-classe-a\") {\n    return msg;\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 220,
+        "wires": [
+            [
+                "9e493cb1f1243340",
+                "ab0e4b85da1f3ebb",
+                "588167600f3051a6",
+                "13f85c5bd131b734",
+                "62f7e5dc87c558ad"
+            ]
+        ]
+    },
+    {
+        "id": "9e493cb1f1243340",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "func.temp.int",
+        "func": "msg.payload = msg.payload['uplink_message']['decoded_payload']['temperatura'];\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 120,
+        "wires": [
+            [
+                "e733be0eeaa5c74d"
+            ]
+        ]
+    },
+    {
+        "id": "588167600f3051a6",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "func.alt.int",
+        "func": "msg.payload = msg.payload['uplink_message']['decoded_payload']['altitude'];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 240,
+        "wires": [
+            [
+                "623ccbaf61635f68"
+            ]
+        ]
+    },
+    {
+        "id": "427c247fb3e3a810",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "func.pressao",
+        "func": "msg.payload = msg.payload['uplink_message']['decoded_payload']['pressao'];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 760,
+        "wires": [
+            [
+                "06ad711d4ab9a90f"
+            ]
+        ]
+    },
+    {
+        "id": "13f85c5bd131b734",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "func.snr.int",
+        "func": "msg.payload = msg.payload['uplink_message']['rx_metadata'][0]['snr']\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 340,
+        "wires": [
+            [
+                "03999f45542214b2"
+            ]
+        ]
+    },
+    {
+        "id": "8288f6be3d49823b",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "sensor.ext",
+        "func": "if (msg.payload['end_device_ids']['device_id'] === \"clima-externo-classe-c\") {\n    return msg;\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 560,
+        "wires": [
+            [
+                "d9d0c6041b04ec3d",
+                "8c1affeb52390c08",
+                "48dedc302e3073bd",
+                "427c247fb3e3a810",
+                "717126ebe51e6849",
+                "d0b08e5c5fa4cd60"
+            ]
+        ]
+    },
+    {
+        "id": "8c1affeb52390c08",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "func.umid.ext",
+        "func": "msg.payload = msg.payload['uplink_message']['decoded_payload']['umidade'];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 640,
+        "wires": [
+            [
+                "374e244816bba342"
+            ]
+        ]
+    },
+    {
+        "id": "48dedc302e3073bd",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "func.alt.ext",
+        "func": "msg.payload = msg.payload['uplink_message']['decoded_payload']['altitude'];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 700,
+        "wires": [
+            [
+                "ea26b065b6af28d8"
+            ]
+        ]
+    },
+    {
+        "id": "717126ebe51e6849",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "func.snr.ext",
+        "func": "msg.payload = msg.payload['uplink_message']['rx_metadata'][0]['snr']\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 400,
+        "wires": [
+            [
+                "03999f45542214b2"
+            ]
+        ]
+    },
+    {
+        "id": "62f7e5dc87c558ad",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "func.rssi.int",
+        "func": "msg.payload = msg.payload['uplink_message']['rx_metadata'][0]['rssi']\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 460,
+        "wires": [
+            [
+                "1c41045b65a2f783"
+            ]
+        ]
+    },
+    {
+        "id": "d0b08e5c5fa4cd60",
+        "type": "function",
+        "z": "40fbb2910c689216",
+        "name": "func.rssi.ext",
+        "func": "msg.payload = msg.payload['uplink_message']['rx_metadata'][0]['rssi']\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 520,
+        "wires": [
+            [
+                "1c41045b65a2f783"
+            ]
+        ]
+    },
+    {
+        "id": "03999f45542214b2",
+        "type": "ui-chart",
+        "z": "40fbb2910c689216",
+        "group": "4cd8a683b9b1c4d8",
+        "name": "SNR",
+        "label": "SNR (End-device Interno x End-device Externo)",
+        "order": 4,
+        "chartType": "line",
+        "category": "topic",
+        "categoryType": "msg",
+        "xAxisLabel": "Tempo",
+        "xAxisProperty": "",
+        "xAxisPropertyType": "msg",
+        "xAxisType": "time",
+        "yAxisLabel": "dB",
+        "yAxisProperty": "",
+        "ymin": "",
+        "ymax": "",
+        "action": "append",
+        "pointShape": "false",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": 1,
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "",
+        "colors": [
+            "#1e23b3",
+            "#fc8803",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "width": 6,
+        "height": 8,
+        "className": "",
+        "x": 930,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1c41045b65a2f783",
+        "type": "ui-chart",
+        "z": "40fbb2910c689216",
+        "group": "b3913b61664ebdbc",
+        "name": "RSSI",
+        "label": "RSSI (End-device Interno x End-device Externo)",
+        "order": 5,
+        "chartType": "line",
+        "category": "topic",
+        "categoryType": "msg",
+        "xAxisLabel": "Tempo",
+        "xAxisProperty": "",
+        "xAxisPropertyType": "msg",
+        "xAxisType": "time",
+        "yAxisLabel": "dBm",
+        "yAxisProperty": "",
+        "ymin": "",
+        "ymax": "",
+        "action": "append",
+        "pointShape": "false",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": 1,
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "",
+        "colors": [
+            "#1e23b3",
+            "#fc8803",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "width": 6,
+        "height": 8,
+        "className": "",
+        "x": 930,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e733be0eeaa5c74d",
+        "type": "ui-gauge",
+        "z": "40fbb2910c689216",
+        "name": "temp.int",
+        "group": "4cd8a683b9b1c4d8",
+        "order": 1,
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Temperatura Sala 2.14",
+        "units": "°C",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "-2",
+                "color": "#062ef4"
+            },
+            {
+                "from": "20",
+                "color": "#09c30c"
+            },
+            {
+                "from": "30",
+                "color": "#ea5353"
+            }
+        ],
+        "min": "-2",
+        "max": "45",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 940,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "53c613fe23805439",
+        "type": "ui-gauge",
+        "z": "40fbb2910c689216",
+        "name": "temp.ext",
+        "group": "b3913b61664ebdbc",
+        "order": 1,
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Temperatura Externa",
+        "units": "°C",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "-2",
+                "color": "#062ef4"
+            },
+            {
+                "from": "20",
+                "color": "#09c30c"
+            },
+            {
+                "from": "30",
+                "color": "#ea5353"
+            }
+        ],
+        "min": "-2",
+        "max": "45",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 940,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "6e44087a29e6ef8f",
+        "type": "ui-gauge",
+        "z": "40fbb2910c689216",
+        "name": "umid.int",
+        "group": "4cd8a683b9b1c4d8",
+        "order": 2,
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Umidade Sala 2.14",
+        "units": "%",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#ea5353"
+            },
+            {
+                "from": "12",
+                "color": "#ffc800"
+            },
+            {
+                "from": "40",
+                "color": "#5cd65c"
+            }
+        ],
+        "min": "0",
+        "max": "100",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 940,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "374e244816bba342",
+        "type": "ui-gauge",
+        "z": "40fbb2910c689216",
+        "name": "umid.ext",
+        "group": "b3913b61664ebdbc",
+        "order": 2,
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Umidade Externa",
+        "units": "%",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#ea5353"
+            },
+            {
+                "from": "12",
+                "color": "#ffc800"
+            },
+            {
+                "from": "40",
+                "color": "#5cd65c"
+            }
+        ],
+        "min": "0",
+        "max": "100",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 940,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "623ccbaf61635f68",
+        "type": "ui-gauge",
+        "z": "40fbb2910c689216",
+        "name": "alt.fixa",
+        "group": "4cd8a683b9b1c4d8",
+        "order": 3,
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Altitude Fixa",
+        "units": "m",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#000000"
+            },
+            {
+                "from": "4",
+                "color": "#000000"
+            },
+            {
+                "from": "7",
+                "color": "#000000"
+            }
+        ],
+        "min": 0,
+        "max": "1200",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 930,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "ea26b065b6af28d8",
+        "type": "ui-gauge",
+        "z": "40fbb2910c689216",
+        "name": "alt.mASL",
+        "group": "b3913b61664ebdbc",
+        "order": 3,
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Altitude Estimada",
+        "units": "m ASL",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#000000"
+            },
+            {
+                "from": "4",
+                "color": "#000000"
+            },
+            {
+                "from": "7",
+                "color": "#000000"
+            }
+        ],
+        "min": 0,
+        "max": "1200",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 940,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "06ad711d4ab9a90f",
+        "type": "ui-gauge",
+        "z": "40fbb2910c689216",
+        "name": "press.atim",
+        "group": "b3913b61664ebdbc",
+        "order": 4,
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "Pressão Atmosférica",
+        "units": "hPa",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#faab00"
+            },
+            {
+                "from": "4",
+                "color": "#faab00"
+            },
+            {
+                "from": "7",
+                "color": "#faab00"
+            }
+        ],
+        "min": "800",
+        "max": "1200",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 950,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "5179ce5d066e58b3",
+        "type": "debug",
+        "z": "40fbb2910c689216",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 280,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "fd0e70611ed12620",
+        "type": "mqtt-broker",
+        "name": "nam1.cloud.thethings.network:1883",
+        "broker": "nam1.cloud.thethings.network:1883",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "4cd8a683b9b1c4d8",
+        "type": "ui-group",
+        "name": "Clima Interno",
+        "page": "50b274dfd80d217e",
+        "width": "6",
+        "height": "1",
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "b3913b61664ebdbc",
+        "type": "ui-group",
+        "name": "Clima Externo",
+        "page": "50b274dfd80d217e",
+        "width": "6",
+        "height": "1",
+        "order": 2,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "50b274dfd80d217e",
+        "type": "ui-page",
+        "name": "Sensores-CSA-UFSJ",
+        "ui": "d04f3346df9e248a",
+        "path": "/sensores-csa-ufsj",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "8c7c6560fc5d75fd",
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "d04f3346df9e248a",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "navigationStyle": "default",
+        "titleBarStyle": "default"
+    },
+    {
+        "id": "8c7c6560fc5d75fd",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    }
+]
