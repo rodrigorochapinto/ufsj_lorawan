@@ -1,0 +1,30 @@
+========================== 4.2.7R===========================
+2021-01-21
+1.Added support for class B in global_conf.json, but it is disabled by default. When needed, you can enable it in /opt/ttn-gateway/packet_forwarder/lora_pkt_fwd/global_conf.json.
+2.Add CN470 and EU433.
+3.Update packet_forwarder version to 2.0.1.
+
+========================== 4.2.5R===========================
+2020-09-09
+1.Modified the problem of gateway-config error if the password in ap mode contains some special characters
+2.Added AS923(920_923) frequency band
+
+========================== 4.2.4R===========================
+1.Add other region global_conf.json for RAK2287.
+2.Modify sx1302 tx power param.
+3.Add RAK2285 support.
+
+==========================V4.2.3R===========================
+2020-07-09
+1.Some naming changes
+
+==========================V4.2.2R===========================
+2020-06-28
+1.Fix a display issue with gateway-config
+2.Delete the temperature printing
+
+==========================V4.2.1R===========================
+2020-05-12
+1. Reset pin is 17, synchronized with sx1301
+2. Version number is synchronized with other Raspberry Pi products
+3. It can synchronize system time according to GPS time
