@@ -53,21 +53,21 @@ int8_t disparo      = 0;
 int8_t pacote       = 0;
  
 void setup(){
-  wdt_enable(WDTO_8S);			   			// Habilita o watchdog com tempo de 8 segundos
+  wdt_enable(WDTO_8S);			   		// Habilita o watchdog com tempo de 8 segundos
   buzzer_on();
   pinMode(BOTAO_ENVIAR, INPUT);				// Configura o pino D4 do MCU como entrada
   pinMode(LED_AMARELO, OUTPUT);				// Configura o pino D5 do MCU como saida
   pinMode(LED_VERDE, OUTPUT);				// Configura o pino D6 do MCU como saida
   pinMode(LED_VERMELHO, OUTPUT);			// Configura o pino D7 do MCU como saida
   pinMode(BUZZER, OUTPUT);    				// Configura o pino A3 analógico para saída digital
-  ss.begin(9600);				      		// Configura o baud rate para comunicação com o módulo GPS
+  ss.begin(9600);				      	// Configura o baud rate para comunicação com o módulo GPS
   lcd.init();
   lcd.backlight();
-  LoRa.setPins(10, 9, 8);  					// Sobrescreve os pinos NSS, RESET e DIO padrão usados pela biblioteca
-  if (!LoRa.begin(915E6)){ 					// Inicializa o modem LoRa com a frequência central de 915 Mhz            
-    digitalWrite(LED_AMARELO, HIGH);		// Acende o Led amarelo quando há erro no modem LoRa
-    while (true){							// Trava o código até que o dispositivo seja reiniciado
-      wdt_reset(); 				    		// Restarta o watchdog                    
+  LoRa.setPins(10, 9, 8);  				// Sobrescreve os pinos NSS, RESET e DIO padrão usados pela biblioteca
+  if (!LoRa.begin(915E6)){ 				// Inicializa o modem LoRa com a frequência central de 915 Mhz            
+    digitalWrite(LED_AMARELO, HIGH);			// Acende o Led amarelo quando há erro no modem LoRa
+    while (true){					// Trava o código até que o dispositivo seja reiniciado
+      wdt_reset(); 				    	// Restarta o watchdog                    
     }                      
   }
   LoRa.setSpreadingFactor(SF); 				// Configura o fator de espalhamento SF7...SF12  
@@ -88,47 +88,47 @@ void setup(){
 void loop(){
   digitalWrite(LED_VERMELHO, HIGH);			// Acende o LED vermelho entrando em estado de espera
   while(digitalRead(BOTAO_ENVIAR)){
-    wdt_reset();						  	// Restarta o watchdog
-    smartDelay(200);						// Coleta as informações vindas do módulo GPS
+    wdt_reset();					// Restarta o watchdog
+    smartDelay(200);					// Coleta as informações vindas do módulo GPS
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("Altitude: ");				
-    lcd.print abs((gps.altitude.meters())); // Atualiza o valor da Altitude no LCD
+    lcd.print abs((gps.altitude.meters())); 		// Atualiza o valor da Altitude no LCD
     lcd.setCursor(0,1);
     lcd.print("Sat.: ");
-    lcd.print(gps.satellites.value());		// Atualiza o valor dos Satélites no LCD
+    lcd.print(gps.satellites.value());			// Atualiza o valor dos Satélites no LCD
     lcd.print("  SF: "); 
-    lcd.print(SF); 							// Atualiza o valor do SF no LCD
+    lcd.print(SF); 					// Atualiza o valor do SF no LCD
   }  
   delay(500);                 				// Impede o disparo múltiplo do botão enviar
   digitalWrite(LED_VERMELHO, LOW);			
   if (millis() - lastSendTime > interval){
-    sendMessage("SYN");						// Envia "SYN" ao receptor 
+    sendMessage("SYN");					// Envia "SYN" ao receptor 
     lastSendTime = millis();  				
   }
-  if (onReceive(LoRa.parsePacket())){		// Entra em estado de escuta até receber o "ACK" do receptor
+  if (onReceive(LoRa.parsePacket())){			// Entra em estado de escuta até receber o "ACK" do receptor
     if (mensagem == "ACK"){   				
       buzzer();               				// Confirmação sonora indicando o início do envio das mensagens  
 /* Looping mais externo */	  
       for (int8_t i = 0; i < LMT_DISPARO; i++){  
-        wdt_reset();						// Restarta o watchdog
+        wdt_reset();					// Restarta o watchdog
         disparo++;
         if(i != 0){           				// Verifica se não é o primeiro disparo
-          for(int8_t count = 0; count < 120 ; count++){   // Intervalo de 2 segundos entre os disparos
+          for(int8_t count = 0; count < 120 ; count++){ // Intervalo de 2 segundos entre os disparos
             wdt_reset();      				// Restarta o watchdog
             delay(1000);  
           }
         }
 /* Looping mais interno */		
         for (int8_t j = 0; j < LMT_PACOTE; j++){ 
-          wdt_reset();						// Restarta o watchdog      
-          lcd_gps();     					// Lê o GPS, atualiza o LCD e monta a mensagem a ser enviada
-          sendMessage(String(mensagem));	// Envio da mensagem concatenada ao receptor
+          wdt_reset();					// Restarta o watchdog      
+          lcd_gps();     				// Lê o GPS, atualiza o LCD e monta a mensagem a ser enviada
+          sendMessage(String(mensagem));		// Envio da mensagem concatenada ao receptor
           mensagem = "";
         }
       }
       disparo = 0;     
-      buzzer();								// Confirmação sonora do término das menssagens enviadas
+      buzzer();						// Confirmação sonora do término das menssagens enviadas
       delay(350);
       buzzer();
       delay(350);
@@ -163,27 +163,27 @@ void alertaFalha(){
 /* Envia uma mensagem LoRa */
 void sendMessage(String outgoing){
   digitalWrite(LED_VERMELHO, HIGH);
-  LoRa.beginPacket();                   	// Inicia o pacote da mensagem
-  LoRa.write(destination);              	// Adiciona o endereco de destino
-  LoRa.write(localAddress);             	// Adiciona o endereco do remetente
-  LoRa.write(msgCount);                 	// Contador da mensagem
-  LoRa.write(outgoing.length());        	// Tamanho da mensagem em bytes
-  LoRa.print(outgoing);                 	// Vetor da mensagem 
-  LoRa.endPacket();                     	// Finaliza o pacote e envia
-  msgCount++;                           	// Contador do numero de mensagnes enviadas
+  LoRa.beginPacket();        		           	// Inicia o pacote da mensagem
+  LoRa.write(destination);              		// Adiciona o endereco de destino
+  LoRa.write(localAddress);      		       	// Adiciona o endereco do remetente
+  LoRa.write(msgCount);                 		// Contador da mensagem
+  LoRa.write(outgoing.length());   		     	// Tamanho da mensagem em bytes
+  LoRa.print(outgoing);                 		// Vetor da mensagem 
+  LoRa.endPacket();                     		// Finaliza o pacote e envia
+  msgCount++;                 		          	// Contador do numero de mensagnes enviadas
   digitalWrite(LED_VERMELHO, LOW);
 }
 /* Recebe uma mensagem LoRa */ 
 int8_t onReceive(int8_t packetSize){
-  if (packetSize == 0) return 0;    		// Se nenhuma mesnagem foi recebida, retorna nada         
-  int8_t recipient = LoRa.read(); 			    // Endereco de quem ta recebendo         
-  byte sender = LoRa.read();            	// Endereco do remetente
-  byte incomingMsgId = LoRa.read();     	// ID da mensagem recebida
-  byte incomingLength = LoRa.read(); 	  	// Tamanho da mensagem recebida    
+  if (packetSize == 0) return 0;    			// Se nenhuma mesnagem foi recebida, retorna nada         
+  int8_t recipient = LoRa.read(); 		    	// Endereco de quem ta recebendo         
+  byte sender = LoRa.read();            		// Endereco do remetente
+  byte incomingMsgId = LoRa.read();     		// ID da mensagem recebida
+  byte incomingLength = LoRa.read();	 	  	// Tamanho da mensagem recebida    
   while (LoRa.available()){
     mensagem += (char)LoRa.read();		  	// Monta a mensagem recebida
   }
-  if (incomingLength != mensagem.length()){ // Mensagem corrompida   
+  if (incomingLength != mensagem.length()){ 		// Mensagem corrompida   
     void alertaFalha();
     return; 
   }                         
@@ -228,7 +228,7 @@ void intervalo(){
 
 /* Atualiza dados do LCD e monta a mensagem para ser enviada */
 String lcd_gps(){
-  smartDelay(500);							// Coleta as informações vindas do módulo GPS
+  smartDelay(500);					// Coleta as informações vindas do módulo GPS
   
   int8_t satelites = gps.satellites.value();
   float  prec      = gps.hdop.hdop();
@@ -244,7 +244,7 @@ String lcd_gps(){
   
   mensagem = "";
   pacote ++;
-  if (pacote > LMT_PACOTE) pacote = 1;  	// Reinicia o n° do pacote ao atingir o limite configurado
+  if (pacote > LMT_PACOTE) pacote = 1;  		// Reinicia o n° do pacote ao atingir o limite configurado
   lcd.clear();
   lcd.setCursor(0,1);
   lcd.print("Sat.: ");
