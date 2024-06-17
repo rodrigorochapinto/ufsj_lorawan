@@ -31,33 +31,33 @@
 #define LED_VERDE     6  
 #define LED_VERMELHO  7
 
-#define SF            7     			    // Varia de SF7 a SF12, padrão é SF7.
+#define SF            7     			        // Varia de SF7 a SF12, padrão é SF7.
 #define TX_Power      20      				// Potência TX em dB, padrão é 17 configurável de 0 até 20 dB       
  
 #define localAddress  0x02    				// Endereco deste dispositivo LoRa
 #define destination   0x01    				// Endereco do dispositivo para enviar a mensagem (0xFF envia para todos devices)
 #define interval      5000    				// Intervalo em ms no envio das mensagens (inicial 5s)
 
-TinyGPSPlus gps;			 				// Cria o objeto gps	  	
+TinyGPSPlus gps;			 		// Cria o objeto gps	  	
 SoftwareSerial ss(3, 2);     				// Biblioteca usada para simular uma porta serial para ser usada pelo módulo GPS
 
 int8_t msgCount = 0;    
 long   lastSendTime = 0; 
 String mensagem;              
 
-File myFile;								// Cria o objeto myFile para manipulação de arquivos
+File myFile;						// Cria o objeto myFile para manipulação de arquivos
  
 void setup(){
-  wdt_enable(WDTO_8S);						// Habilita o watchdog com tempo de 8 segundos
+  wdt_enable(WDTO_8S);					// Habilita o watchdog com tempo de 8 segundos
   pinMode(LED_AMARELO, OUTPUT);				// Configura o pino D5 como saida
   pinMode(LED_VERDE, OUTPUT);				// Configura o pino D6 como saida
   pinMode(LED_VERMELHO, OUTPUT);			// Configura o pino D7 como saida
-  ss.begin(9600);		    				// Configura o baud rate para comunicação com o módulo GPS	
-  LoRa.setPins(10, 9, 8);  					// Sobrescreve os pinos NSS, RESET e DIO padrão usados pela biblioteca 	
-  if (!LoRa.begin(915E6)){ 					// Inicializa o modem LoRa com a frequência central de 915 Mhz            
-    digitalWrite(LED_AMARELO, HIGH);		// Acende o Led amarelo quando há erro no modem LoRa
-    while (true){							// Trava o código até que o dispositivo seja reiniciado
-      wdt_reset(); 				    		// Restarta o watchdog                    
+  ss.begin(9600);		    			// Configura o baud rate para comunicação com o módulo GPS	
+  LoRa.setPins(10, 9, 8);  				// Sobrescreve os pinos NSS, RESET e DIO padrão usados pela biblioteca 	
+  if (!LoRa.begin(915E6)){ 				// Inicializa o modem LoRa com a frequência central de 915 Mhz            
+    digitalWrite(LED_AMARELO, HIGH);		        // Acende o Led amarelo quando há erro no modem LoRa
+    while (true){					// Trava o código até que o dispositivo seja reiniciado
+      wdt_reset(); 				    	// Restarta o watchdog                    
     }                     
   }
   LoRa.setSpreadingFactor(SF); 				// Configura o fator de espalhamento  SF7...SF12
@@ -74,10 +74,10 @@ void setup(){
    digitalWrite(LED_VERMELHO, LOW); 
    delay(30); 
   }
-  if (!SD.begin(SD_CS)) {					// Inicia o módulo de cartão SD com o pino D4 como chip select
-    digitalWrite(LED_AMARELO, HIGH);		// Acende o Led amarelo quando há erro no módulo SD card
-    while (true){							// Trava o código até que o dispositivo seja reiniciado
-      wdt_reset(); 				    		// Restarta o watchdog                    
+  if (!SD.begin(SD_CS)) {				// Inicia o módulo de cartão SD com o pino D4 como chip select
+    digitalWrite(LED_AMARELO, HIGH);		        // Acende o Led amarelo quando há erro no módulo SD card
+    while (true){					// Trava o código até que o dispositivo seja reiniciado
+      wdt_reset(); 				    	// Restarta o watchdog                    
     };
   }
 /* Pisca os leds amarelo e vermelho indicando o funcionamento do módulo SD card */   
@@ -94,7 +94,7 @@ void setup(){
 }
  
 void loop(){
-  wdt_reset();								// Restarta o watchdog
+  wdt_reset();						// Restarta o watchdog
   mensagem = "";
   digitalWrite(LED_VERMELHO, HIGH);
   if (onReceive(LoRa.parsePacket())){
@@ -109,7 +109,7 @@ void loop(){
  
 /* Confirma o recebimento do SYN enviado pelo transmissor para iniciar as transmissões e grava uma linha contendo zeros no arquivo */ 
 void enviarACK(){
-  sendMessage("ACK");						// Confirma o recebimento da mensagem SYN enviada pelo transmissor enviando um ACK
+  sendMessage("ACK");					// Confirma o recebimento da mensagem SYN enviada pelo transmissor enviando um ACK
 	mensagem = "";
 	mensagem.concat("0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"); // Adiciona zeros na mensagem indicando o início das mensagens recebidas
 	salvar(mensagem);
@@ -129,23 +129,23 @@ void alertaFalha(){
 /* Envia uma mensagem LoRa */
 void sendMessage(String outgoing) 
 {
-  LoRa.beginPacket();                   	// Inicia o pacote da mensagem
-  LoRa.write(destination);              	// Adiciona o endereco de destino
-  LoRa.write(localAddress);             	// Adiciona o endereco do remetente
-  LoRa.write(msgCount);                 	// Contador da mensagem
-  LoRa.write(outgoing.length());        	// Tamanho da mensagem em bytes
-  LoRa.print(outgoing);                 	// Vetor da mensagem 
-  LoRa.endPacket();                     	// Finaliza o pacote e envia
-  msgCount++;                           	// Contador do numero de mensagnes enviadas
+  LoRa.beginPacket();                   		// Inicia o pacote da mensagem
+  LoRa.write(destination);             		 	// Adiciona o endereco de destino
+  LoRa.write(localAddress);             		// Adiciona o endereco do remetente
+  LoRa.write(msgCount);        		         	// Contador da mensagem
+  LoRa.write(outgoing.length());        		// Tamanho da mensagem em bytes
+  LoRa.print(outgoing);                 		// Vetor da mensagem 
+  LoRa.endPacket();                 		    	// Finaliza o pacote e envia
+  msgCount++;                           		// Contador do numero de mensagnes enviadas
 }
  
 /* Recebe uma mensagem LoRa */ 
 int8_t onReceive(int8_t packetSize){
-  if (packetSize == 0) return;          	// Se nenhuma mesnagem foi recebida, retorna nada
-  int8_t recipient = LoRa.read();          	// Endereco de quem ta recebendo
-  byte sender = LoRa.read();            	// Endereco do remetente
-  byte incomingMsgId = LoRa.read();     	// ID da mensagem recebida
-  byte incomingLength = LoRa.read();    	// Tamanho da mensagem recebida
+  if (packetSize == 0) return;       		   	// Se nenhuma mesnagem foi recebida, retorna nada
+  int8_t recipient = LoRa.read();          		// Endereco de quem ta recebendo
+  byte sender = LoRa.read();          		  	// Endereco do remetente
+  byte incomingMsgId = LoRa.read();     		// ID da mensagem recebida
+  byte incomingLength = LoRa.read();    		// Tamanho da mensagem recebida
  
   mensagem = "";
  
@@ -153,7 +153,7 @@ int8_t onReceive(int8_t packetSize){
     mensagem += (char)LoRa.read();			// Monta a mensagem recebida
   }
  
-  if (incomingLength != mensagem.length()){	// Mensagem corrompida 
+  if (incomingLength != mensagem.length()){		// Mensagem corrompida 
     alertaFalha();
     return 0;                        
   }
@@ -169,7 +169,7 @@ int8_t onReceive(int8_t packetSize){
     mensagem.concat(';');
     mensagem.concat(LoRa.packetRssi());
 
-    smartDelay(1000);						// Coleta as informações vindas do módulo GPS
+    smartDelay(1000);					// Coleta as informações vindas do módulo GPS
    
     mensagem.concat(';');
     mensagem.concat(gps.satellites.value());
